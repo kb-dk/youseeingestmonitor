@@ -1,4 +1,0 @@
-ingestmonitorwebpage
-====================
-
-Ingest Monitor Webpage

@@ -1,0 +1,111 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>dk.statsbiblioteket.mediaplatform</groupId>
+    <artifactId>ingestmonitorwebpage</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <name>Ingest monitor webpage</name>
+    <packaging>war</packaging>
+
+    <parent>
+        <groupId>dk.statsbiblioteket.sbprojects</groupId>
+        <artifactId>sbprojects-parent</artifactId>
+        <version>3</version>
+    </parent>
+
+    <description>Web interface for monitoring ingest workflow states.
+    </description>
+    <url>https://sbforge.org/display/INFRA</url>
+
+    <organization>
+        <name>The State and University Library, Denmark</name>
+        <url>http://statsbiblioteket.dk</url>
+    </organization>
+
+
+    <repositories>
+        <repository>
+            <id>sbprojects-nexus</id>
+            <url>https://sbprojects.statsbiblioteket.dk/nexus/content/groups/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <scm>
+        <url>https://github.com/statsbiblioteket/ingestmonitorwebpage</url>
+        <connection>scm:git:git@github.com/statsbiblioteket/ingestmonitorwebpage.git</connection>
+        <developerConnection>scm:git:git@github.com:statsbiblioteket/ingestmonitorwebpage.git</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Kåre Fiedler Christiansen</name>
+            <email>kfc@statsbiblioteket.dk</email>
+            <organization>The State and University Library, Denmark</organization>
+            <organizationUrl>http://www.statsbiblioteket.dk</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <inceptionYear>2012</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache2</name>
+            <distribution>repo</distribution>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <system>JIRA</system>
+        <url>https://sbforge.org/jira/browse/INFRA</url>
+    </issueManagement>
+
+    <ciManagement>
+        <system>Jenkins</system>
+        <url>https://sbforge.org/jenkins/</url>
+    </ciManagement>
+
+    <!--distributionManagement>
+        <site>
+            <id>sbprojects-nexus</id>
+            <name>SBProjects Maven site</name>
+            <url>dav:https://sbprojects.statsbiblioteket.dk/maven/infra/sites/reference/${project.version}</url>
+        </site>
+    </distributionManagement-->
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <generateBundle>true</generateBundle>
+                    <failIfWarning>true</failIfWarning>
+                    <useMissingFile>true</useMissingFile>
+                    <extraExtensions>
+                        <xsd>xml</xsd>
+                    </extraExtensions>
+                    <licenseName>apache_v2</licenseName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.2</version>
+            </plugin>
+        </plugins>
+	<finalName>${artifactId}</finalName>
+    </build>
+
+</project>
