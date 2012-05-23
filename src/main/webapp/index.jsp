@@ -117,11 +117,11 @@
         update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&onlyLast=true', 'Files in progress');
 
         $("button#inprogress").click(function() {
-            update('states/?excludes=<%= DONE_STATE %>&excludes=<%= "failed" %>&onlyLast=true', 'Files in progress');
+            update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&onlyLast=true', 'Files in progress');
         });
 
         $("button#failed").click(function() {
-            update('states/?includes=<%= "failed" %>&onlyLast=true', 'Failed files');
+            update('states/?includes=<%= FAILED_STATE %>&onlyLast=true', 'Failed files');
         });
 
         $("button#done").click(function() {
