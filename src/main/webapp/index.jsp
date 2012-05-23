@@ -20,7 +20,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
     <title>Ingest Monitor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Ingest Monitor">
@@ -28,7 +27,7 @@
 
     <!-- Le styles -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
-    <style>
+    <style type="text/css">
         body {
             padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
         }
@@ -51,7 +50,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </a>
-            <a class="brand" href="#">Ingest Monitor</a>
+            <a class="brand" href="index.jsp">Ingest Monitor</a>
 
             <div class="nav-collapse">
                 <div class="btn-group">
@@ -69,13 +68,16 @@
     <h1>Files</h1>
     <table class="table">
         <thead>
-        <th>File</th>
-        <th>Date</th>
-        <th>State</th>
-        <th>Message</th>
+        <tr>
+            <th>File</th>
+            <th>Date</th>
+            <th>State</th>
+            <th>Message</th>
+        </tr>
         </thead>
         <tbody>
         </tbody>
+    </table>
 </div>
 <!-- /container -->
 
@@ -126,3 +128,4 @@
     })
 </script>
 </body>
+</html>
