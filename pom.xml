@@ -4,7 +4,7 @@
 
     <groupId>dk.statsbiblioteket.mediaplatform</groupId>
     <artifactId>ingestmonitorwebpage</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
     <name>Ingest monitor webpage</name>
     <packaging>war</packaging>
 
