@@ -16,9 +16,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   #L%
-  --%>
-<!DOCTYPE html>
-<html lang="en">
+  --%><!DOCTYPE html>
+<% String FAILED_STATE = application.getInitParameter("failed-state");
+   String DONE_STATE = application.getInitParameter("done-state");
+   String WORKFLOWSTATEMONITOR_SERVICE = application.getInitParameter("workflowstatemonitorservice");
+%><html lang="en">
 <head>
     <title>Ingest Monitor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,12 +94,11 @@
     function show(state) {
         var items = [];
         $.each(state, function(id, content) {
-            items.push('<tr><td>' + content.entity.name
-                               + ' <a href="#" onClick="$.getJSON(\'/workflowstatemonitor/states/' + content.entity.name
-                               + '/\', show);$(&quot;h1&quot;).replaceWith(&quot;&lt;h1&gt;Details for ' + content
-                    .entity.name + '&lt;/h1&gt;&quot;); return false">(details)</a></td><td>' + new Date(content.date)
-                               + '</td><td>' + content.component + ': ' + content.stateName + '</td><td>' + (content
-                    .message == null ? '' : content.message) + '</td></tr>');
+            items.push('<tr><td>' + content.entity.name + ' <a href="#" onClick="update(\'states/' + content.entity.name
+                               + '/\', \'Details for ' + content.entity.name
+                               + '\'); return false">(details)</a></td><td>' + new Date(content.date) + '</td><td>'
+                               + content.component + ': ' + content.stateName + '</td><td>' + (content.message == null
+                    ? '' : content.message) + '</td></tr>');
         });
 
         $('<tbody/>', {
@@ -107,23 +108,24 @@
 
     }
 
-    $("h1").replaceWith("<h1>Files in progress</h1>");
-    $.getJSON('/workflowstatemonitor/states/?excludes=done&onlyLast=true', show);
+    function update(path, title) {
+        $('h1').replaceWith('<h1>' + title + '</h1>');
+        $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>' + path, show);
+    }
 
     $(document).ready(function() {
+        update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&onlyLast=true', 'Files in progress');
+
         $("button#inprogress").click(function() {
-            $.getJSON('/workflowstatemonitor/states/?excludes=done&onlyLast=true', show);
-            $("h1").replaceWith("<h1>Files in progress</h1>");
+            update('states/?excludes=<%= DONE_STATE %>&excludes=<%= "failed" %>&onlyLast=true', 'Files in progress');
         });
 
         $("button#failed").click(function() {
-            $.getJSON('/workflowstatemonitor/states/?includes=failed&onlyLast=true', show);
-            $("h1").replaceWith("<h1>Failed files</h1>");
+            update('states/?includes=<%= "failed" %>&onlyLast=true', 'Failed files');
         });
 
         $("button#done").click(function() {
-            $.getJSON('/workflowstatemonitor/states/?includes=done&onlyLast=true', show);
-            $("h1").replaceWith("<h1>Completed files</h1>");
+            update('states/?includes=<%= DONE_STATE %>&onlyLast=true', 'Completed files');
         });
     })
 </script>

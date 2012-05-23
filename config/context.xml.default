@@ -1,0 +1,5 @@
+<Context>
+    <Parameter name="done-state" value="Done" override="false"/>
+    <Parameter name="failed-state" value="Failed" override="false"/>
+    <Parameter name="workflowstatemonitorservice" value="/workflowstatemonitor/" override="false"/>
+</Context>

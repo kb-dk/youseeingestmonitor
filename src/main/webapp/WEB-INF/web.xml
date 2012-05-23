@@ -25,4 +25,19 @@
 
     <display-name>ingestmonitorwebpage</display-name>
     <description>Ingest Monitor Webpage</description>
+
+    <context-param>
+        <param-name>failed-state</param-name>
+        <param-value>Failed</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>done-state</param-name>
+        <param-value>Done</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>workflowstatemonitorservice</param-name>
+        <param-value>/workflowstatemonitor/</param-value>
+    </context-param>
 </web-app>
