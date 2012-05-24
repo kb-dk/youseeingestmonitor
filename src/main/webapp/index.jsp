@@ -18,9 +18,10 @@
   #L%
   --%><!DOCTYPE html>
 <% String FAILED_STATE = application.getInitParameter("failed-state");
-   String DONE_STATE = application.getInitParameter("done-state");
-   String WORKFLOWSTATEMONITOR_SERVICE = application.getInitParameter("workflowstatemonitorservice");
-%><html lang="en">
+    String DONE_STATE = application.getInitParameter("done-state");
+    String WORKFLOWSTATEMONITOR_SERVICE = application.getInitParameter("workflowstatemonitorservice");
+%>
+<html lang="en">
 <head>
     <title>Ingest Monitor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,10 +56,16 @@
             <a class="brand" href="index.jsp">Ingest Monitor</a>
 
             <div class="nav-collapse">
-                <div class="btn-group">
-                    <button class="btn" id="inprogress">In Progress</button>
-                    <button class="btn" id="failed">Failed</button>
-                    <button class="btn" id="done">Done</button>
+                <div class="btn-toolbar">
+                    <div class="btn-group">
+                        <button class="btn" id="inprogress">In Progress</button>
+                        <button class="btn" id="failed">Failed</button>
+                        <button class="btn" id="done">Done</button>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn" id="reload">Reload</button>
+                    </div>
                 </div>
             </div>
             <!--/.nav-collapse -->
@@ -91,14 +98,26 @@
 <script type="text/javascript" src="bootstrap/js/bootstrap.min.js">
 </script>
 <script type="text/javascript">
+    var lastPath;
+    var lastTitle;
+    var lastAllStates;
+
+    function noAllStatesShow(state) {
+        doShow(state, false);
+    }
+
     function show(state) {
+        doShow(state, true);
+    }
+
+    function doShow(state, allStates) {
         var items = [];
         $.each(state, function(id, content) {
-            items.push('<tr><td>' + content.entity.name + ' <a href="#" onClick="update(\'states/' + content.entity.name
-                               + '/\', \'Details for ' + content.entity.name
-                               + '\'); return false">(details)</a></td><td>' + new Date(content.date) + '</td><td>'
-                               + content.component + ': ' + content.stateName + '</td><td>' + (content.message == null
-                    ? '' : content.message) + '</td></tr>');
+            allStatesLink = allStates ? ' <a href="#" onClick="update(\'states/' + content.entity.name
+                    + '/\', \'Details for ' + content.entity.name + '\'); return false">(show all states)</a>' : '';
+            items.push('<tr><td>' + content.entity.name + allStatesLink + '</td><td>' + new Date(content.date)
+                               + '</td><td>' + content.component + ': ' + content.stateName + '</td><td>' + (content
+                    .message == null ? '' : content.message) + '</td></tr>');
         });
 
         $('<tbody/>', {
@@ -108,25 +127,40 @@
 
     }
 
-    function update(path, title) {
+    function update(path, title, allStates) {
+        lastPath = path;
+        lastTitle = title;
+        lastAllStates = allStates;
+
         $('h1').replaceWith('<h1>' + title + '</h1>');
-        $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>' + path, show);
+        if (allStates) {
+            $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>' + path, show);
+        } else {
+            $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>' + path, noAllStatesShow);
+        }
     }
 
     $(document).ready(function() {
-        update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&onlyLast=true', 'Files in progress');
+        update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&onlyLast=true', 'Files in progress',
+               true);
 
         $("button#inprogress").click(function() {
-            update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&onlyLast=true', 'Files in progress');
+            update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&onlyLast=true', 'Files in progress',
+                   true);
         });
 
         $("button#failed").click(function() {
-            update('states/?includes=<%= FAILED_STATE %>&onlyLast=true', 'Failed files');
+            update('states/?includes=<%= FAILED_STATE %>&onlyLast=true', 'Failed files', true);
         });
 
         $("button#done").click(function() {
-            update('states/?includes=<%= DONE_STATE %>&onlyLast=true', 'Completed files');
+            update('states/?includes=<%= DONE_STATE %>&onlyLast=true', 'Completed files', true);
         });
+
+        $("button#reload").click(function() {
+            update(lastPath, lastTitle, lastAllStates);
+        });
+
     })
 </script>
 </body>
