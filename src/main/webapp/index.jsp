@@ -48,33 +48,31 @@
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </a>
-            <a class="brand" href="index.jsp">Ingest Monitor</a>
+            <a class="brand" href="#">Ingest Monitor</a>
 
-            <div class="nav-collapse">
-                <div class="btn-toolbar">
-                    <div class="btn-group">
-                        <button class="btn" id="inprogress">In Progress</button>
-                        <button class="btn" id="failed">Failed</button>
-                        <button class="btn" id="done">Done</button>
-                    </div>
+            <div class="navbar-form pull-left btn-toolbar">
+                <div class="btn-group" data-toggle="buttons-radio">
+                    <button class="btn" id="inprogress">In Progress</button>
+                    <button class="btn" id="failed">Failed</button>
+                    <button class="btn" id="done">Done</button>
+                </div>
 
-                    <div class="btn-group">
-                        <button class="btn" id="reload">Reload</button>
-                    </div>
+                <div class="btn-group" data-toggle="buttons-radio">
+                    <button class="btn" id="day">Today</button>
+                    <button class="btn" id="week">Last 7 days</button>
+                    <button class="btn" id="all">All</button>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn" id="reload"><span class="icon-refresh"></span>Reload</button>
                 </div>
             </div>
-            <!--/.nav-collapse -->
         </div>
     </div>
 </div>
 
 <div class="container">
-    <h1>Files</h1>
+    <h1><span id="header">Files</span></h1>
     <table class="table">
         <thead>
         <tr>
@@ -95,26 +93,17 @@
 <!-- Placed at the end of the document so the pages load faster -->
 <script type="text/javascript" src="jquery/jquery-1.7.2.min.js">
 </script>
+<script type="text/javascript" src="bbq/jquery.ba-bbq.min.js">
+</script>
 <script type="text/javascript" src="bootstrap/js/bootstrap.min.js">
 </script>
 <script type="text/javascript">
-    var lastPath;
-    var lastTitle;
-    var lastAllStates;
-
-    function noAllStatesShow(state) {
-        doShow(state, false);
-    }
-
     function show(state) {
-        doShow(state, true);
-    }
-
-    function doShow(state, allStates) {
         var items = [];
         $.each(state, function(id, content) {
-            allStatesLink = allStates ? ' <a href="#" onClick="update(\'states/' + content.entity.name
-                    + '/\', \'Details for ' + content.entity.name + '\'); return false">(show all states)</a>' : '';
+            allStatesLink = $.deparam.fragment().mode != 'details'
+                    ? ' <a href="#" onClick="$.bbq.pushState(\'#mode=details&file=' + content.entity.name
+                    + '\', 0); return false">(show all states)</a>' : '';
             items.push('<tr><td>' + content.entity.name + allStatesLink + '</td><td>' + new Date(content.date)
                                + '</td><td>' + content.component + ': ' + content.stateName + '</td><td>' + (content
                     .message == null ? '' : content.message) + '</td></tr>');
@@ -128,39 +117,79 @@
     }
 
     function update(path, title, allStates) {
-        lastPath = path;
-        lastTitle = title;
-        lastAllStates = allStates;
+        $('#header').replaceWith('<span id="header">' + title + '</span>');
+        $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>' + path, show);
+    }
 
-        $('h1').replaceWith('<h1>' + title + '</h1>');
-        if (allStates) {
-            $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>' + path, show);
-        } else {
-            $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>' + path, noAllStatesShow);
+    function hashchange(e) {
+        var datequery;
+        switch ($.deparam.fragment().period) {
+            case 'day':
+                var today = new Date();
+                datequery = "&startDate=" + today.getFullYear() + "-" + ("0" + (today.getMonth() + 1)).slice(-2) + "-"
+                        + ("0" + today.getDate()).slice(-2);
+                break;
+            case 'week':
+                var thisweek = new Date();
+                thisweek.setDate(thisweek.getDate() - 7);
+                datequery = "&startDate=" + thisweek.getFullYear() + "-" + ("0" + (thisweek.getMonth() + 1)).slice(-2)
+                        + "-" + ("0" + thisweek.getDate()).slice(-2);
+                break;
+            case 'all':
+            default:
+                datequery = "";
+                break;
+        }
+
+        switch ($.deparam.fragment().mode) {
+            case 'failed':
+                update('states/?includes=<%= FAILED_STATE %>&onlyLast=true' + datequery, 'Failed files', true);
+                break;
+            case 'done':
+                update('states/?includes=<%= DONE_STATE %>&onlyLast=true' + datequery, 'Completed files', true);
+                break;
+            case 'details':
+                update('states/' + $.deparam.fragment().file + '?' + datequery,
+                       'Details for ' + $.deparam.fragment().file);
+                break;
+            case 'inprogress':
+            default:
+                update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&onlyLast=true' + datequery,
+                       'Files in progress', true);
         }
     }
 
     $(document).ready(function() {
-        update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&onlyLast=true', 'Files in progress',
-               true);
+        $(window).bind('hashchange', hashchange);
+        hashchange();
 
-        $("button#inprogress").click(function() {
-            update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&onlyLast=true', 'Files in progress',
-                   true);
+        $("#inprogress").click(function() {
+            $.bbq.pushState("#mode=inprogress&file=", 0);
         });
 
-        $("button#failed").click(function() {
-            update('states/?includes=<%= FAILED_STATE %>&onlyLast=true', 'Failed files', true);
+        $("#failed").click(function() {
+            $.bbq.pushState("#mode=failed&file=", 0);
         });
 
-        $("button#done").click(function() {
-            update('states/?includes=<%= DONE_STATE %>&onlyLast=true', 'Completed files', true);
+        $("#done").click(function() {
+            $.bbq.pushState("#mode=done&file=", 0);
         });
 
-        $("button#reload").click(function() {
-            update(lastPath, lastTitle, lastAllStates);
+        $("#day").click(function() {
+            $.bbq.pushState("#period=day", 0);
         });
 
+        $("#week").click(function() {
+            $.bbq.pushState("#period=week", 0);
+        });
+
+        $("#all").click(function() {
+            $.bbq.pushState("#period=all", 0);
+        });
+
+        $("#reload").click(function() {
+            hashchange();
+        });
     })
 </script>
 </body>
