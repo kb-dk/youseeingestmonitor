@@ -54,17 +54,17 @@
 
             <div class="navbar-form pull-left btn-toolbar">
                 <div class="btn-group" data-toggle="buttons-radio">
-                    <button class="btn" id="inprogress">In Progress</button>
-                    <button class="btn" id="failed">Failed</button>
-                    <button class="btn" id="stopped">Stopped</button>
-                    <button class="btn" id="restarted">Restarted</button>
-                    <button class="btn" id="done">Done</button>
+                    <button class="btn" id="inprogress"><i class="icon-play"></i> In Progress</button>
+                    <button class="btn" id="failed"><i class="icon-warning-sign"></i> Failed</button>
+                    <button class="btn" id="details" style="display: none;"><i class="icon-list"></i> Details</button>
+                    <button class="btn" id="stopped"><i class="icon-stop"></i> Stopped</button>
+                    <button class="btn" id="done"><i class="icon-ok"></i> Done</button>
                 </div>
 
                 <div class="btn-group" data-toggle="buttons-radio">
-                    <button class="btn" id="day">Today</button>
-                    <button class="btn" id="week">Last 7 days</button>
-                    <button class="btn" id="all">All</button>
+                    <button class="btn" id="day"><i class="icon-time"></i> Today</button>
+                    <button class="btn" id="week"><i class="icon-list-alt"></i> Last 7 days</button>
+                    <button class="btn" id="all"><i class="icon-calendar"></i> All</button>
                 </div>
 
                 <div class="btn-group">
@@ -107,18 +107,18 @@
         var items = [];
         $.each(state, function(id, content) {
             var allStatesLink = '<a href="#" class="btn" onclick="$.bbq.pushState(\'#mode=details&file=' + content
-                    .entity.name + '\', 0); return false">Show all states</a>';
+                    .entity.name + '\', 0); return false"><i class="icon-list"></i> Show all states</a>';
             var stopLink = '<a href="#" class="btn" onclick="stop(\'' + content.entity.name
-                    + '\'); return false">Stop</a>';
+                    + '\'); return false"><i class="icon-stop"></i> Stop</a>';
             var restartLink = '<a href="#" class="btn" onclick="restart(\'' + content.entity.name
-                    + '\'); return false">Restart</a>';
+                    + '\'); return false"><i class="icon-play"></i> Restart</a>';
 
             var item = "<tr>";
             item += "<td>" + content.entity.name + "</td>";
             item += "<td>" + new Date(content.date) + "</td>";
             item += "<td>" + content.component + ": " + content.stateName + "</td>";
             item += "<td>" + (content.message == null ? '' : content.message) + "</td>";
-            item += "<td>";
+            item += "<td><div class=\"btn-group\">";
             if ($.deparam.fragment().mode != 'details') {
                 item += allStatesLink;
             }
@@ -129,7 +129,7 @@
             if ($.deparam.fragment().mode != 'details' && content.stateName != "<%= RESTARTED_STATE %>") {
                 item += restartLink;
             }
-            item += "</td>";
+            item += "</div></td>";
             item += "</tr>";
             items.push(item);
         });
@@ -170,11 +170,13 @@
         var datequery;
         switch ($.deparam.fragment().period) {
             case 'day':
+                $('#day').button('toggle');
                 var today = new Date();
                 datequery = "&startDate=" + today.getFullYear() + "-" + ("0" + (today.getMonth() + 1)).slice(-2) + "-"
                         + ("0" + today.getDate()).slice(-2);
                 break;
             case 'week':
+                $('#week').button('toggle');
                 var thisweek = new Date();
                 thisweek.setDate(thisweek.getDate() - 7);
                 datequery = "&startDate=" + thisweek.getFullYear() + "-" + ("0" + (thisweek.getMonth() + 1)).slice(-2)
@@ -182,30 +184,33 @@
                 break;
             case 'all':
             default:
+                $('#all').button('toggle');
                 datequery = "";
                 break;
         }
 
         switch ($.deparam.fragment().mode) {
             case 'failed':
+                $('#failed').button('toggle');
                 update('states/?includes=<%= FAILED_STATE %>&onlyLast=true' + datequery, 'Failed files', true);
                 break;
             case 'stopped':
+                $('#stopped').button('toggle');
                 update('states/?includes=<%= STOPPED_STATE %>&onlyLast=true' + datequery, 'Completed files', true);
                 break;
-            case 'restarted':
-                update('states/?includes=<%= RESTARTED_STATE %>&onlyLast=true' + datequery, 'Completed files', true);
-                break;
             case 'done':
+                $('#done').button('toggle');
                 update('states/?includes=<%= DONE_STATE %>&onlyLast=true' + datequery, 'Completed files', true);
                 break;
             case 'details':
+                $('#details').button('toggle');
                 update('states/' + $.deparam.fragment().file + '?' + datequery,
                        'Details for ' + $.deparam.fragment().file);
                 break;
             case 'inprogress':
             default:
-                update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&excludes=<%= STOPPED_STATE %>&excludes=<%= RESTARTED_STATE %>&onlyLast=true' + datequery,
+                $('#inprogress').button('toggle');
+                update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&excludes=<%= STOPPED_STATE %>&onlyLast=true' + datequery,
                        'Files in progress', true);
         }
     }
@@ -224,10 +229,6 @@
 
         $("#stopped").click(function() {
             $.bbq.pushState("#mode=stopped&file=", 0);
-        });
-
-        $("#restarted").click(function() {
-            $.bbq.pushState("#mode=restarted&file=", 0);
         });
 
         $("#done").click(function() {
