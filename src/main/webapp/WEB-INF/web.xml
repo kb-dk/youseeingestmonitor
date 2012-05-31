@@ -37,6 +37,16 @@
     </context-param>
 
     <context-param>
+        <param-name>stopped-state</param-name>
+        <param-value>Stopped</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>restarted-state</param-name>
+        <param-value>Restarted</param-value>
+    </context-param>
+
+    <context-param>
         <param-name>workflowstatemonitorservice</param-name>
         <param-value>/workflowstatemonitor/</param-value>
     </context-param>

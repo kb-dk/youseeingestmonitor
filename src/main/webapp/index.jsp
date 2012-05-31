@@ -19,6 +19,8 @@
   --%><!DOCTYPE html>
 <% String FAILED_STATE = application.getInitParameter("failed-state");
     String DONE_STATE = application.getInitParameter("done-state");
+    String STOPPED_STATE = application.getInitParameter("stopped-state");
+    String RESTARTED_STATE = application.getInitParameter("restarted-state");
     String WORKFLOWSTATEMONITOR_SERVICE = application.getInitParameter("workflowstatemonitorservice");
 %>
 <html lang="en">
@@ -54,6 +56,8 @@
                 <div class="btn-group" data-toggle="buttons-radio">
                     <button class="btn" id="inprogress">In Progress</button>
                     <button class="btn" id="failed">Failed</button>
+                    <button class="btn" id="stopped">Stopped</button>
+                    <button class="btn" id="restarted">Restarted</button>
                     <button class="btn" id="done">Done</button>
                 </div>
 
@@ -80,6 +84,7 @@
             <th>Date</th>
             <th>State</th>
             <th>Message</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -101,12 +106,32 @@
     function show(state) {
         var items = [];
         $.each(state, function(id, content) {
-            allStatesLink = $.deparam.fragment().mode != 'details'
-                    ? ' <a href="#" onClick="$.bbq.pushState(\'#mode=details&file=' + content.entity.name
-                    + '\', 0); return false">(show all states)</a>' : '';
-            items.push('<tr><td>' + content.entity.name + allStatesLink + '</td><td>' + new Date(content.date)
-                               + '</td><td>' + content.component + ': ' + content.stateName + '</td><td>' + (content
-                    .message == null ? '' : content.message) + '</td></tr>');
+            var allStatesLink = '<a href="#" class="btn" onclick="$.bbq.pushState(\'#mode=details&file=' + content
+                    .entity.name + '\', 0); return false">Show all states</a>';
+            var stopLink = '<a href="#" class="btn" onclick="stop(\'' + content.entity.name
+                    + '\'); return false">Stop</a>';
+            var restartLink = '<a href="#" class="btn" onclick="restart(\'' + content.entity.name
+                    + '\'); return false">Restart</a>';
+
+            var item = "<tr>";
+            item += "<td>" + content.entity.name + "</td>";
+            item += "<td>" + new Date(content.date) + "</td>";
+            item += "<td>" + content.component + ": " + content.stateName + "</td>";
+            item += "<td>" + (content.message == null ? '' : content.message) + "</td>";
+            item += "<td>";
+            if ($.deparam.fragment().mode != 'details') {
+                item += allStatesLink;
+            }
+            if ($.deparam.fragment().mode != 'details' && content.stateName != "<%= DONE_STATE %>" && content.stateName
+                    != "<%= STOPPED_STATE %>") {
+                item += stopLink;
+            }
+            if ($.deparam.fragment().mode != 'details' && content.stateName != "<%= RESTARTED_STATE %>") {
+                item += restartLink;
+            }
+            item += "</td>";
+            item += "</tr>";
+            items.push(item);
         });
 
         $('<tbody/>', {
@@ -114,6 +139,26 @@
             html: items.join('')
         }).replaceAll('tbody');
 
+    }
+
+    function stop(name) {
+        $.ajax({
+                   type: "POST",
+                   url: '<%= WORKFLOWSTATEMONITOR_SERVICE %>' + 'states/' + name,
+                   contentType: "application/json",
+                   data: JSON.stringify({component: 'yousee_ingest_monitor_webpage', stateName: '<%= STOPPED_STATE %>'}),
+               }).done(hashchange);
+        $.bbq.pushState("#mode=details&file=" + name, 0);
+    }
+
+    function restart(name) {
+        $.ajax({
+                   type: "POST",
+                   url: '<%= WORKFLOWSTATEMONITOR_SERVICE %>' + 'states/' + name,
+                   contentType: "application/json",
+                   data: JSON.stringify({component: 'yousee_ingest_monitor_webpage', stateName: '<%= RESTARTED_STATE %>'}),
+               }).done(hashchange);
+        $.bbq.pushState("#mode=details&file=" + name, 0);
     }
 
     function update(path, title, allStates) {
@@ -145,6 +190,12 @@
             case 'failed':
                 update('states/?includes=<%= FAILED_STATE %>&onlyLast=true' + datequery, 'Failed files', true);
                 break;
+            case 'stopped':
+                update('states/?includes=<%= STOPPED_STATE %>&onlyLast=true' + datequery, 'Completed files', true);
+                break;
+            case 'restarted':
+                update('states/?includes=<%= RESTARTED_STATE %>&onlyLast=true' + datequery, 'Completed files', true);
+                break;
             case 'done':
                 update('states/?includes=<%= DONE_STATE %>&onlyLast=true' + datequery, 'Completed files', true);
                 break;
@@ -154,7 +205,7 @@
                 break;
             case 'inprogress':
             default:
-                update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&onlyLast=true' + datequery,
+                update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&excludes=<%= STOPPED_STATE %>&excludes=<%= RESTARTED_STATE %>&onlyLast=true' + datequery,
                        'Files in progress', true);
         }
     }
@@ -169,6 +220,14 @@
 
         $("#failed").click(function() {
             $.bbq.pushState("#mode=failed&file=", 0);
+        });
+
+        $("#stopped").click(function() {
+            $.bbq.pushState("#mode=stopped&file=", 0);
+        });
+
+        $("#restarted").click(function() {
+            $.bbq.pushState("#mode=restarted&file=", 0);
         });
 
         $("#done").click(function() {

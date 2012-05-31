@@ -1,5 +1,7 @@
 <Context>
     <Parameter name="done-state" value="Done" override="false"/>
     <Parameter name="failed-state" value="Failed" override="false"/>
+    <Parameter name="stopped-state" value="Stopped" override="false"/>
+    <Parameter name="restarted-state" value="Restarted" override="false"/>
     <Parameter name="workflowstatemonitorservice" value="/workflowstatemonitor/" override="false"/>
 </Context>
