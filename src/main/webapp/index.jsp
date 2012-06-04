@@ -224,7 +224,7 @@
                }).done(hashchange);
     }
 
-    function update(path, title, allStates) {
+    function update(path, title) {
         $("[rel=tooltip]").tooltip('hide');
         $('#header').replaceWith('<span id="header">' + title + '</span>');
         $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>' + path, show);
@@ -256,15 +256,15 @@
         switch ($.deparam.fragment().mode) {
             case 'failed':
                 $('#failed').button('toggle');
-                update('states/?includes=<%= FAILED_STATE %>&onlyLast=true' + datequery, 'Failed files', true);
+                update('states/?includes=<%= FAILED_STATE %>&onlyLast=true' + datequery, 'Failed files');
                 break;
             case 'stopped':
                 $('#stopped').button('toggle');
-                update('states/?includes=<%= STOPPED_STATE %>&onlyLast=true' + datequery, 'Stopped files', true);
+                update('states/?includes=<%= STOPPED_STATE %>&onlyLast=true' + datequery, 'Stopped files');
                 break;
             case 'done':
                 $('#done').button('toggle');
-                update('states/?includes=<%= DONE_STATE %>&onlyLast=true' + datequery, 'Completed files', true);
+                update('states/?includes=<%= DONE_STATE %>&onlyLast=true' + datequery, 'Completed files');
                 break;
             case 'details':
                 $('#details').button('toggle');
@@ -275,7 +275,7 @@
             default:
                 $('#inprogress').button('toggle');
                 update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&excludes=<%= STOPPED_STATE %>&onlyLast=true'
-                               + datequery, 'Files in progress', true);
+                               + datequery, 'Files in progress');
         }
     }
 
