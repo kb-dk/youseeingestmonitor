@@ -93,27 +93,51 @@
 </div>
 <!-- /container -->
 
-<div class="modal hide" id="stopRestartModal">
+<div class="modal hide" id="stopModal">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">×</button>
-        <h3>Warning: This file may still be in progress</h3>
+        <h3>Warning: This file may still be processed in the ingest workflow</h3>
     </div>
     <div class="modal-body">
         <p>
-            If this file is still in the process of going through the workflow, your request to stop or restart the file
-            may be ignored.
+            The file is not in an end state of the workflow.
+            This indicates that the file is still being processed or that the workflow has stopped unexpectedly
+            with an error. If the file is still processed, your request to stop the file may be ignored.
         </p>
 
         <p>
-            Only press OK if you are sure the workflow has unexpectedly stopped during execution.
+            Press OK if you believe that the workflow has stopped unexpectedly and don't want the ingest workflow to
+            try to ingest the file again.
         </p>
     </div>
     <div class="modal-footer">
         <a href="#" class="btn" data-dismiss="modal">Cancel</a>
-        <a id="confirmStopRestart" href="#" class="btn btn-primary">OK</a>
+        <a id="confirmStop" href="#" class="btn btn-primary">OK</a>
     </div>
 </div>
 
+<div class="modal hide" id="restartModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3>Warning: This file may still be processed in the ingest workflow</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            The file is not in an end state of the workflow.
+            This indicates that the file is still being processed or that the workflow has stopped unexpectedly
+            with an error. If the file is still processed, your request to restart the file may be ignored.
+        </p>
+
+        <p>
+            Press OK if you believe that the workflow has stopped unexpectedly and want the ingest workflow to
+            try to ingest the file again.
+        </p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+        <a id="confirmRestart" href="#" class="btn btn-primary">OK</a>
+    </div>
+</div>
 <!-- Le javascript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
@@ -127,11 +151,11 @@
     function show(state) {
         var items = [];
         $.each(state, function(id, content) {
-            var allStatesLink = '<a href="#" class="btn" onclick="$.bbq.pushState(\'#mode=details&file=' + content
+            var allStatesLink = '<a rel="tooltip" title="Show all individual states this file has gone through." href="#" class="btn" onclick="$.bbq.pushState(\'#mode=details&file=' + content
                     .entity.name + '\', 0); return false"><i class="icon-list"></i> Show all states</a>';
-            var stopLink = '<a href="#" class="btn" onclick="stop(\'' + content.entity.name + "\',\'" + content.stateName
+            var stopLink = '<a href="#" rel="tooltip" title="Do not retry downloading this file on errors." class="btn" onclick="stop(\'' + content.entity.name + "\',\'" + content.stateName
                     + '\'); return false"><i class="icon-stop"></i> Stop</a>';
-            var restartLink = '<a href="#" class="btn" onclick="restart(\'' + content.entity.name + "\',\'" + content.stateName
+            var restartLink = '<a href="#" rel="tooltip" title="Retry downloding this file." class="btn" onclick="restart(\'' + content.entity.name + "\',\'" + content.stateName
                     + '\'); return false"><i class="icon-play"></i> Restart</a>';
 
             var item = "<tr>";
@@ -159,15 +183,14 @@
             'class': 'my-new-list',
             html: items.join('')
         }).replaceAll('tbody');
-
+        $("[rel=tooltip]").tooltip();
     }
 
     function stop(name, stateName) {
         if (stateName != "<%= DONE_STATE %>" && stateName
                     != "<%= STOPPED_STATE %>") {
-            $("#stopRestartModal").attr("data-name", name);
-            $("#stopRestartModal").attr("data-type", "Stop");
-            $("#stopRestartModal").modal();
+            $("#stopModal").attr("data-name", name);
+            $("#stopModal").modal();
         } else {
             doStop(name);
         }
@@ -185,9 +208,8 @@
     function restart(name, stateName) {
         if (stateName != "<%= DONE_STATE %>" && stateName
                     != "<%= STOPPED_STATE %>") {
-            $("#stopRestartModal").attr("data-name", name);
-            $("#stopRestartModal").attr("data-type", "Restart");
-            $("#stopRestartModal").modal();
+            $("#restartModal").attr("data-name", name);
+            $("#restartModal").modal();
         } else {
             doRestart(name);
         }
@@ -203,6 +225,7 @@
     }
 
     function update(path, title, allStates) {
+        $("[rel=tooltip]").tooltip('hide');
         $('#header').replaceWith('<span id="header">' + title + '</span>');
         $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>' + path, show);
     }
@@ -237,7 +260,7 @@
                 break;
             case 'stopped':
                 $('#stopped').button('toggle');
-                update('states/?includes=<%= STOPPED_STATE %>&onlyLast=true' + datequery, 'Completed files', true);
+                update('states/?includes=<%= STOPPED_STATE %>&onlyLast=true' + datequery, 'Stopped files', true);
                 break;
             case 'done':
                 $('#done').button('toggle');
@@ -292,15 +315,17 @@
             hashchange();
         });
 
-        $("#confirmStopRestart").click(function() {
-            var name = $("#stopRestartModal").attr("data-name");
-            var type = $("#stopRestartModal").attr("data-type");
-            if (type == "Stop") {
-                doStop(name);
-            } else {
-                doRestart(name);
-            }
-            $("#stopRestartModal").modal('hide');
+        $("#confirmStop").click(function() {
+            var name = $("#stopModal").attr("data-name");
+            doStop(name);
+            $("#stopModal").modal('hide');
+            return false;
+        });
+
+        $("#confirmRestart").click(function() {
+            var name = $("#restartModal").attr("data-name");
+            doRestart(name);
+            $("#restartModal").modal('hide');
             return false;
         });
     })
