@@ -187,8 +187,7 @@
     }
 
     function stop(name, stateName) {
-        if (stateName != "<%= DONE_STATE %>" && stateName
-                    != "<%= STOPPED_STATE %>") {
+        if (stateName != "<%= DONE_STATE %>" && stateName != "<%= STOPPED_STATE %>" && stateName != "<%= FAILED_STATE %>") {
             $("#stopModal").attr("data-name", name);
             $("#stopModal").modal();
         } else {
@@ -206,8 +205,7 @@
     }
 
     function restart(name, stateName) {
-        if (stateName != "<%= DONE_STATE %>" && stateName
-                    != "<%= STOPPED_STATE %>") {
+        if (stateName != "<%= DONE_STATE %>" && stateName != "<%= STOPPED_STATE %>" && stateName != "<%= FAILED_STATE %>") {
             $("#restartModal").attr("data-name", name);
             $("#restartModal").modal();
         } else {
