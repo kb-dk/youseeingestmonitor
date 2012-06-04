@@ -93,6 +93,27 @@
 </div>
 <!-- /container -->
 
+<div class="modal hide" id="stopRestartModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3>Warning: This file may still be in progress</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            If this file is still in the process of going through the workflow, your request to stop or restart the file
+            may be ignored.
+        </p>
+
+        <p>
+            Only press OK if you are sure the workflow has unexpectedly stopped during execution.
+        </p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+        <a id="confirmStopRestart" href="#" class="btn btn-primary">OK</a>
+    </div>
+</div>
+
 <!-- Le javascript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
@@ -108,9 +129,9 @@
         $.each(state, function(id, content) {
             var allStatesLink = '<a href="#" class="btn" onclick="$.bbq.pushState(\'#mode=details&file=' + content
                     .entity.name + '\', 0); return false"><i class="icon-list"></i> Show all states</a>';
-            var stopLink = '<a href="#" class="btn" onclick="stop(\'' + content.entity.name
+            var stopLink = '<a href="#" class="btn" onclick="stop(\'' + content.entity.name + "\',\'" + content.stateName
                     + '\'); return false"><i class="icon-stop"></i> Stop</a>';
-            var restartLink = '<a href="#" class="btn" onclick="restart(\'' + content.entity.name
+            var restartLink = '<a href="#" class="btn" onclick="restart(\'' + content.entity.name + "\',\'" + content.stateName
                     + '\'); return false"><i class="icon-play"></i> Restart</a>';
 
             var item = "<tr>";
@@ -141,24 +162,44 @@
 
     }
 
-    function stop(name) {
-        $.ajax({
-                   type: "POST",
-                   url: '<%= WORKFLOWSTATEMONITOR_SERVICE %>' + 'states/' + name,
-                   contentType: "application/json",
-                   data: JSON.stringify({component: 'yousee_ingest_monitor_webpage', stateName: '<%= STOPPED_STATE %>'}),
-               }).done(hashchange);
-        $.bbq.pushState("#mode=details&file=" + name, 0);
+    function stop(name, stateName) {
+        if (stateName != "<%= DONE_STATE %>" && stateName
+                    != "<%= STOPPED_STATE %>") {
+            $("#stopRestartModal").attr("data-name", name);
+            $("#stopRestartModal").attr("data-type", "Stop");
+            $("#stopRestartModal").modal();
+        } else {
+            doStop(name);
+        }
     }
 
-    function restart(name) {
+    function doStop(name) {
         $.ajax({
                    type: "POST",
                    url: '<%= WORKFLOWSTATEMONITOR_SERVICE %>' + 'states/' + name,
                    contentType: "application/json",
-                   data: JSON.stringify({component: 'yousee_ingest_monitor_webpage', stateName: '<%= RESTARTED_STATE %>'}),
+                   data: JSON.stringify({component: 'yousee_ingest_monitor_webpage', stateName: '<%= STOPPED_STATE %>'})
                }).done(hashchange);
-        $.bbq.pushState("#mode=details&file=" + name, 0);
+    }
+
+    function restart(name, stateName) {
+        if (stateName != "<%= DONE_STATE %>" && stateName
+                    != "<%= STOPPED_STATE %>") {
+            $("#stopRestartModal").attr("data-name", name);
+            $("#stopRestartModal").attr("data-type", "Restart");
+            $("#stopRestartModal").modal();
+        } else {
+            doRestart(name);
+        }
+    }
+
+    function doRestart(name) {
+        $.ajax({
+                   type: "POST",
+                   url: '<%= WORKFLOWSTATEMONITOR_SERVICE %>' + 'states/' + name,
+                   contentType: "application/json",
+                   data: JSON.stringify({component: 'yousee_ingest_monitor_webpage', stateName: '<%= RESTARTED_STATE %>'})
+               }).done(hashchange);
     }
 
     function update(path, title, allStates) {
@@ -210,8 +251,8 @@
             case 'inprogress':
             default:
                 $('#inprogress').button('toggle');
-                update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&excludes=<%= STOPPED_STATE %>&onlyLast=true' + datequery,
-                       'Files in progress', true);
+                update('states/?excludes=<%= DONE_STATE %>&excludes=<%= FAILED_STATE %>&excludes=<%= STOPPED_STATE %>&onlyLast=true'
+                               + datequery, 'Files in progress', true);
         }
     }
 
@@ -249,6 +290,18 @@
 
         $("#reload").click(function() {
             hashchange();
+        });
+
+        $("#confirmStopRestart").click(function() {
+            var name = $("#stopRestartModal").attr("data-name");
+            var type = $("#stopRestartModal").attr("data-type");
+            if (type == "Stop") {
+                doStop(name);
+            } else {
+                doRestart(name);
+            }
+            $("#stopRestartModal").modal('hide');
+            return false;
         });
     })
 </script>
