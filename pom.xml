@@ -147,7 +147,13 @@
                                         <property name="remote_warfile" value="~/${application_name}/${application_name}.war" />
                                         <property name="tomcat" value="tomcat02" />
                                         <property name="keyfile" value="${env.sbprojects_canopus_keyfile}" />
-                                         <!--
+                                        <property name="canonical.name.spaceless" value="youseeingestmonitor" />
+                                        <!--
+                                        Undeploy the webapp by deleting the context descriptor
+                                        -->
+                                        <sshexec host="canopus" failonerror="false" username="yousee" keyfile="${keyfile}" command="rm ~/${tomcat}/conf/Catalina/localhost/${canonical.name.spaceless}.xml" />
+                                        <sleep seconds="10" />
+                                        <!--
                                         Kill tomcat (with extreme prejudice)
                                         -->
                                         <sshexec host="canopus" failonerror="false" username="yousee" keyfile="${keyfile}" command="export JAVA_HOME=/usr/java/jdk1.6.0_32/ ; ~/${tomcat}/sbbin/tomcat-init.sh stop" />
@@ -163,9 +169,9 @@
                                         <exec command="rm -rf ${project.build.directory}/Medieplatform-config " />
                                         <exec command="git clone https://${env.sbprojects_git_username}:${env.sbprojects_git_password}@sbprojects.statsbiblioteket.dk/fisheye/git/Medieplatform-config.git ${project.build.directory}/Medieplatform-config " />
                                         <!--
-                                        deploy project-specific configuration files
+                                        deploy context descriptor
                                         -->
-                                        <scp file="${project.build.directory}/Medieplatform-config/${application_name}/${application_name}.xml" toDir="yousee@canopus:~/${tomcat}/conf/Catalina/localhost" keyfile="${keyfile}" />
+                                        <scp file="${project.build.directory}//Medieplatform-config/${canonical.name.spaceless}/${canonical.name.spaceless}.xml" toDir="yousee@canopus:~/${tomcat}/conf/Catalina/localhost" keyfile="${keyfile}" />
                                         <!-- Restart tomcat -->
                                         <sshexec host="canopus" username="yousee" keyfile="${keyfile}" command="export JAVA_HOME=/usr/java/jdk1.6.0_32/ ; ~/${tomcat}/sbbin/tomcat-init.sh start" />
                                     </target>
