@@ -1,6 +1,6 @@
 <%--
   #%L
-  Ingest monitor webpage
+  Yousee Ingest Monitor
   %%
   Copyright (C) 2012 The State and University Library, Denmark
   %%
@@ -200,7 +200,7 @@
                    type: "POST",
                    url: '<%= WORKFLOWSTATEMONITOR_SERVICE %>' + 'states/' + name,
                    contentType: "application/json",
-                   data: JSON.stringify({component: 'yousee_ingest_monitor_webpage', stateName: '<%= STOPPED_STATE %>'})
+                   data: JSON.stringify({component: 'yousee_ingest_monitor', stateName: '<%= STOPPED_STATE %>'})
                }).done(hashchange);
     }
 
@@ -218,7 +218,7 @@
                    type: "POST",
                    url: '<%= WORKFLOWSTATEMONITOR_SERVICE %>' + 'states/' + name,
                    contentType: "application/json",
-                   data: JSON.stringify({component: 'yousee_ingest_monitor_webpage', stateName: '<%= RESTARTED_STATE %>'})
+                   data: JSON.stringify({component: 'yousee_ingest_monitor', stateName: '<%= RESTARTED_STATE %>'})
                }).done(hashchange);
     }
 

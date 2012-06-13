@@ -1,0 +1,4 @@
+<Context docBase="${user.home}/yousee-ingest-monitor/yousee-ingest-monitor.war">
+    <Parameter name="workflowstatemonitorservice" description="Path within this tomcat to deployed workflow state monitor service. Must end in /" value="/workflowstatemonitor/" override="false"/>
+</Context>
+

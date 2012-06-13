@@ -2,10 +2,10 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dk.statsbiblioteket.mediaplatform</groupId>
-    <artifactId>ingestmonitorwebpage</artifactId>
+    <groupId>dk.statsbiblioteket.medieplatform</groupId>
+    <artifactId>yousee-ingest-monitor</artifactId>
     <version>0.6-SNAPSHOT</version>
-    <name>Ingest monitor webpage</name>
+    <name>Yousee Ingest Monitor</name>
     <packaging>war</packaging>
 
     <parent>
@@ -38,9 +38,9 @@
     </repositories>
 
     <scm>
-        <url>https://github.com/statsbiblioteket/ingestmonitorwebpage</url>
-        <connection>scm:git:git@github.com/statsbiblioteket/ingestmonitorwebpage.git</connection>
-        <developerConnection>scm:git:git@github.com:statsbiblioteket/ingestmonitorwebpage.git</developerConnection>
+        <url>https://github.com/statsbiblioteket/youseeingestmonitor</url>
+        <connection>scm:git:git@github.com/statsbiblioteket/youseeingestmonitor.git</connection>
+        <developerConnection>scm:git:git@github.com:statsbiblioteket/youseeingestmonitor.git</developerConnection>
     </scm>
 
     <developers>
