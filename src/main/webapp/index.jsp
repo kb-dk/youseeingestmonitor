@@ -139,8 +139,6 @@
         $("[rel=tooltip]").tooltip();
     }
 
-    }
-
     function stop(name) {
         $.ajax({
                    type: "POST",
