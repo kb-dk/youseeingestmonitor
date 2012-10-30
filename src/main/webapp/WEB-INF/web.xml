@@ -50,4 +50,9 @@
         <param-name>workflowstatemonitorservice</param-name>
         <param-value>/workflowstatemonitor/</param-value>
     </context-param>
+
+    <context-param>
+        <param-name>deliveryhttpprefix</param-name>
+        <param-value>http://localhost/~yousee/</param-value>
+    </context-param>
 </web-app>
