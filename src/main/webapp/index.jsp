@@ -52,25 +52,30 @@
         <div class="container">
             <a class="brand" href="#">Ingest Monitor</a>
 
-            <div class="navbar-form pull-left btn-toolbar">
-                <div class="btn-group" data-toggle="buttons-radio">
-                    <button class="btn" id="inprogress"><i class="icon-play"></i> In Progress</button>
-                    <button class="btn" id="failed"><i class="icon-warning-sign"></i> Failed</button>
-                    <button class="btn" id="details" style="display: none;"><i class="icon-list"></i> Details</button>
-                    <button class="btn" id="stopped"><i class="icon-stop"></i> Stopped</button>
-                    <button class="btn" id="done"><i class="icon-ok"></i> Done</button>
-                </div>
-
-                <div class="btn-group" data-toggle="buttons-radio">
-                    <button class="btn" id="day"><i class="icon-time"></i> Today</button>
-                    <button class="btn" id="week"><i class="icon-list-alt"></i> Last 7 days</button>
-                    <button class="btn" id="all"><i class="icon-calendar"></i> All</button>
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn" id="reload"><span class="icon-refresh"></span>Reload</button>
-                </div>
+            <div class="btn-group nav" data-toggle="buttons-radio">
+                <button class="btn" id="inprogress"><i class="icon-play"></i> In Progress</button>
+                <button class="btn" id="failed"><i class="icon-warning-sign"></i> Failed</button>
+                <button class="btn" id="details" style="display: none;"><i class="icon-list"></i> Details</button>
+                <button class="btn" id="stopped"><i class="icon-stop"></i> Stopped</button>
+                <button class="btn" id="done"><i class="icon-ok"></i> Done</button>
             </div>
+
+            <div class="btn-group nav" data-toggle="buttons-radio">
+                <button class="btn" id="day"><i class="icon-time"></i> Today</button>
+                <button class="btn" id="week"><i class="icon-list-alt"></i> Last 7 days</button>
+                <button class="btn" id="all"><i class="icon-calendar"></i> All</button>
+            </div>
+
+            <div class="btn-group nav">
+                <button class="btn" id="reload"><span class="icon-refresh"></span>Reload</button>
+            </div>
+
+            <ul class="nav pull-right">
+              <li class="active">
+                <a href="index.jsp">States</a>
+              </li>
+              <li><a href="overview.jsp">Overview</a></li>
+            </ul>
         </div>
     </div>
 </div>

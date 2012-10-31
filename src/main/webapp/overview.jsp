@@ -34,6 +34,7 @@
 
     <!-- Le styles -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="datepicker/css/datepicker.css" rel="stylesheet">
     <style type="text/css">
         body {
             padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -54,17 +55,30 @@
         <div class="container">
             <a class="brand" href="#">Ingest Monitor</a>
 
-            <div class="navbar-form pull-left btn-toolbar">
-                <div class="btn-group">
-                    <button class="btn" id="reload"><span class="icon-refresh"></span>Reload</button>
+            <div class="btn-group nav">
+                <div class="input-append date nav" id="dp" data-date-format="yyyy-mm-dd">
+                    <input class="span2" size="16" type="text" value="1970-01-01" readonly />
+                    <span class="add-on"><i class="icon-calendar"></i></span>
                 </div>
             </div>
+
+            <div class="btn-group nav">
+
+                <button class="btn" id="reload"><span class="icon-refresh"></span>Reload</button>
+            </div>
+
+            <ul class="nav pull-right">
+              <li><a href="index.jsp">States</a></li>
+              <li class="active">
+                  <a href="overview.jsp">Overview</a>
+              </li>
+            </ul>
         </div>
     </div>
 </div>
 
 <div class="container">
-    <h1><span id="header">Files</span></h1>
+    <h1><span id="header">Overview</span></h1>
     <table class="table">
         <thead>
         <tr>
@@ -95,7 +109,7 @@
             <th>23</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="statetable">
         </tbody>
     </table>
     <div>
@@ -112,6 +126,8 @@
 <script type="text/javascript" src="bbq/jquery.ba-bbq.min.js">
 </script>
 <script type="text/javascript" src="bootstrap/js/bootstrap.min.js">
+</script>
+<script type="text/javascript" src="datepicker/js/bootstrap-datepicker.js">
 </script>
 <script type="text/javascript">
     function show(state) {
@@ -163,6 +179,7 @@
                 switch (content.stateName) {
                     case '<%= DONE_STATE %>':
                         items.push('<td style="background-color: green; text-align: center"><a href="<%= DELIVERY_HTTP_PREFIX %>' + encodeURIComponent(content.entity.name) + '"><i class="icon-play"></i></a></td>');
+                        // TODO Replace direct links with playlist
                         break;
                     case '<%= STOPPED_STATE %>':
                     case '<%= FAILED_STATE %>':
@@ -183,26 +200,42 @@
 
         $('<tbody/>', {
             'class': 'my-new-list',
+            'id': 'statetable',
             html: items.join('')
-        }).replaceAll('tbody');
+        }).replaceAll('#statetable');
 
-        $('<span id="errors">', {
+        $('<span>', {
             'class': 'my-new-list',
+            'id': 'statetable',
             html: unparsed.join('')
-        }).replaceAll('span[id="errors"]');
+        }).replaceAll('#errors');
 
         $("[rel=tooltip]").tooltip();
     }
 
+    function formatDate(date) {
+        return date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-"
+                                        + ("0" + date.getDate()).slice(-2);
+    }
+
     function update() {
-        var today = new Date();
-        today.setDate(today.getDate() + 1);
-        var yesterday = new Date();
-        var startDate = yesterday.getFullYear() + "-" + ("0" + (yesterday.getMonth() + 1)).slice(-2) + "-"
-                                + ("0" + yesterday.getDate()).slice(-2);
-        var endDate = today.getFullYear() + "-" + ("0" + (today.getMonth() + 1)).slice(-2) + "-"
-                            + ("0" + today.getDate()).slice(-2);
+        var today;
+        var dateString = $.deparam.fragment().date;
+        if (dateString && dateString.match("^[0-9]{4}-[0-9]{2}-[0-9]{2}$")) {
+            var dateStrings = dateString.split("-");
+            today = new Date(parseInt(dateStrings[0], 10), parseInt(dateStrings[1], 10) - 1, parseInt(dateStrings[2], 10));
+        } else {
+            today = new Date();
+        }
+        $('#header').replaceWith('<span id="header">Overview of ' + formatDate(today) + '</span>');
+        $('#dp').find('input')[0].value = formatDate(today);
+        $('#dp').datepicker('update');
+        var tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        var startDate = formatDate(today);
+        var endDate = formatDate(tomorrow);
         $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>states?onlyLast=true&startDate=' + startDate + '&endDate=' + endDate, show);
+        // TODO: What if last state is from another day?
     }
 
     function hashchange(e) {
@@ -211,6 +244,10 @@
 
     $(document).ready(function() {
         $(window).bind('hashchange', hashchange);
+        $('#dp').datepicker().on('changeDate', function(ev) {
+            $.bbq.pushState("#date=" + formatDate(ev.date));
+            $('#dp').datepicker('hide');
+        });
         hashchange();
 
         $("#reload").click(function() {
