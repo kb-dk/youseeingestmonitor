@@ -136,8 +136,17 @@
             var filename2 = el2.entity.name;
             var channel1 = filename1.substring(0, filename1.indexOf("_"));
             var channel2 = filename2.substring(0, filename2.indexOf("_"));
-            var time1 = parseInt(filename1.split('-')[4].split('.')[0], 10);
-            var time2 = parseInt(filename2.split('-')[4].split('.')[0], 10);
+            var time1;
+            try {
+                time1 = parseInt(filename1.split('-')[4].split('.')[0], 10);
+            } catch (e) {
+                time1 = 0;
+            }
+            try {
+                var time2 = parseInt(filename2.split('-')[4].split('.')[0], 10);
+            } catch (e) {
+                time2 = 0;
+            }
             if ((channel1 < channel2) || ((channel1 == channel2) && (time1 < time2))) {
                 return -1
             }
