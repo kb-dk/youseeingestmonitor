@@ -177,7 +177,11 @@
             try {
                 var filename = content.entity.name;
                 var channel = filename.substring(0, filename.indexOf("_"));
+                var date = filename.split('-').slice(1,4).join('-');
                 var time = parseInt(filename.split('-')[4].split('.')[0], 10);
+                if (date != $.deparam.fragment().date) {
+                    return true; // continue with next
+                }
                 if (channel != curChannel) {
                     endRow();
                     curChannel = channel;
@@ -203,10 +207,10 @@
                     }
                     curTime++;
                 } else {
-                    unparsed.push('Unexpected: ' + content + '<br/>');
+                    unparsed.push('Unexpected: <a href="index.jsp#file=' + encodeURIComponent(content.entity.name) + '&mode=details">' + content.entity.name + '</a><br/>');
                 }
             } catch (e) {
-                unparsed.push('Unexpected: ' + content + '<br/>');
+                unparsed.push('Unexpected: ' + content.entity.name + '<br/>');
             }
         });
         endRow();
@@ -232,23 +236,22 @@
     }
 
     function update() {
-        var today;
+        var day;
         var dateString = $.deparam.fragment().date;
         if (dateString && dateString.match("^[0-9]{4}-[0-9]{2}-[0-9]{2}$")) {
             var dateStrings = dateString.split("-");
-            today = new Date(parseInt(dateStrings[0], 10), parseInt(dateStrings[1], 10) - 1, parseInt(dateStrings[2], 10));
+            day = new Date(parseInt(dateStrings[0], 10), parseInt(dateStrings[1], 10) - 1, parseInt(dateStrings[2], 10));
         } else {
-            today = new Date();
+            day = new Date();
         }
-        $('#header').replaceWith('<span id="header">Overview of ' + formatDate(today) + '</span>');
-        $('#dp').find('input')[0].value = formatDate(today);
+        $('#header').replaceWith('<span id="header">Overview of ' + formatDate(day) + '</span>');
+        $('#dp').find('input')[0].value = formatDate(day);
         $('#dp').datepicker('update');
-        var tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1);
-        var startDate = formatDate(today);
-        var endDate = formatDate(tomorrow);
+        var later = new Date(day);
+        later.setDate(day.getDate() + 7);
+        var startDate = formatDate(day);
+        var endDate = formatDate(later);
         $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>states?onlyLast=true&startDate=' + startDate + '&endDate=' + endDate, show);
-        // TODO: What if last state is from another day?
     }
 
     function hashchange(e) {
