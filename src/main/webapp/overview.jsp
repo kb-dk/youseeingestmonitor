@@ -174,34 +174,38 @@
         }
 
         $.each(state, function(id, content) {
-            var filename = content.entity.name;
-            var channel = filename.substring(0, filename.indexOf("_"));
-            var time = parseInt(filename.split('-')[4].split('.')[0], 10);
-            if (channel != curChannel) {
-                endRow();
-                curChannel = channel;
-                curTime = 0;
-                items.push('<tr><td>' + channel + '</td>');
-            }
-            pad(time);
-            if (curTime == time) {
-                switch (content.stateName) {
-                    case '<%= DONE_STATE %>':
-                        items.push('<td style="background-color: green; text-align: center"><a href="<%= DELIVERY_HTTP_PREFIX %>' + encodeURIComponent(content.entity.name) + '"><i class="icon-play"></i></a></td>');
-                        // TODO Replace direct links with playlist
-                        break;
-                    case '<%= STOPPED_STATE %>':
-                    case '<%= FAILED_STATE %>':
-                        items.push('<td style="background-color: red; text-align: center"><a href="index.jsp#file=' + encodeURIComponent(content.entity.name) + '&mode=details"><i class="icon-warning-sign"></i></a></td>');
-                        break;
-                    case '<%= RESTARTED_STATE %>':
-                    default:
-                        items.push('<td style="background-color: yellow; text-align: center"><a href="index.jsp#file=' + encodeURIComponent(content.entity.name) + '&mode=details"><i class="icon-list"></i></a></td>');
-                        break;
-
+            try {
+                var filename = content.entity.name;
+                var channel = filename.substring(0, filename.indexOf("_"));
+                var time = parseInt(filename.split('-')[4].split('.')[0], 10);
+                if (channel != curChannel) {
+                    endRow();
+                    curChannel = channel;
+                    curTime = 0;
+                    items.push('<tr><td>' + channel + '</td>');
                 }
-                curTime++;
-            } else {
+                pad(time);
+                if (curTime == time) {
+                    switch (content.stateName) {
+                        case '<%= DONE_STATE %>':
+                            items.push('<td style="background-color: green; text-align: center"><a href="<%= DELIVERY_HTTP_PREFIX %>' + encodeURIComponent(content.entity.name) + '"><i class="icon-play"></i></a></td>');
+                            // TODO Replace direct links with playlist
+                            break;
+                        case '<%= STOPPED_STATE %>':
+                        case '<%= FAILED_STATE %>':
+                            items.push('<td style="background-color: red; text-align: center"><a href="index.jsp#file=' + encodeURIComponent(content.entity.name) + '&mode=details"><i class="icon-warning-sign"></i></a></td>');
+                            break;
+                        case '<%= RESTARTED_STATE %>':
+                        default:
+                            items.push('<td style="background-color: yellow; text-align: center"><a href="index.jsp#file=' + encodeURIComponent(content.entity.name) + '&mode=details"><i class="icon-list"></i></a></td>');
+                            break;
+
+                    }
+                    curTime++;
+                } else {
+                    unparsed.push('Unexpected: ' + content + '<br/>');
+                }
+            } catch (e) {
                 unparsed.push('Unexpected: ' + content + '<br/>');
             }
         });
