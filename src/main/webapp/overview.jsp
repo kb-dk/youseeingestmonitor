@@ -210,7 +210,7 @@
                     unparsed.push('Unexpected: <a href="index.jsp#file=' + encodeURIComponent(content.entity.name) + '&mode=details">' + content.entity.name + '</a><br/>');
                 }
             } catch (e) {
-                unparsed.push('Unexpected: ' + content.entity.name + '<br/>');
+                unparsed.push('Unexpected: <a href="index.jsp#file=' + encodeURIComponent(content.entity.name) + '&mode=details">' + content.entity.name + '</a><br/>');
             }
         });
         endRow();
