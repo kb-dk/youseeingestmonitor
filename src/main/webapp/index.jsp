@@ -120,7 +120,7 @@
             item += "<td>" + content.entity.name + "</td>";
             item += "<td>" + new Date(content.date) + "</td>";
             item += "<td>" + content.component + ": " + content.stateName + "</td>";
-            item += "<td>" + (content.message == null ? '' : content.message) + "</td>";
+            item += "<td style=\"white-space: pre-wrap\">" + (content.message == null ? '' : content.message) + "</td>";
             item += "<td><div class=\"btn-group\">";
             if ($.deparam.fragment().mode != 'details') {
                 item += allStatesLink;
