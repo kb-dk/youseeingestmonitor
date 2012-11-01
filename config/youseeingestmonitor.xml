@@ -1,5 +1,5 @@
 <Context docBase="${user.home}/yousee-ingest-monitor/yousee-ingest-monitor.war">
     <Parameter name="workflowstatemonitorservice" description="Path within this tomcat to deployed workflow state monitor service. Must end in /" value="/workflowstatemonitor/" override="false"/>
-    <Parameter name="deliveryhttpprefix" description="HTTP Prefix for delivering files" value="http://localhost/~yousee/" override="false"/>
+    <Parameter name="deliveryhttpprefix" description="HTTP Prefix for delivering files. Must end in /" value="http://localhost/~yousee/" override="false"/>
 </Context>
 
