@@ -192,8 +192,7 @@
                 if (curTime == time) {
                     switch (content.stateName) {
                         case '<%= DONE_STATE %>':
-                            items.push('<td style="background-color: green; text-align: center"><a href="<%= DELIVERY_HTTP_PREFIX %>' + encodeURIComponent(content.entity.name) + '"><i class="icon-play"></i></a></td>');
-                            // TODO Replace direct links with playlist
+                            items.push('<td style="background-color: green; text-align: center"><a href="play.jsp?file=' + encodeURIComponent('<%= DELIVERY_HTTP_PREFIX %>' + encodeURIComponent(content.entity.name)) + '"><i class="icon-play"></i></a></td>');
                             break;
                         case '<%= STOPPED_STATE %>':
                         case '<%= FAILED_STATE %>':
