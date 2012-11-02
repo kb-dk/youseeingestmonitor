@@ -39,6 +39,34 @@
         body {
             padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
         }
+        td.yousee-recording-none {
+            background-color: white;
+            text-align: center;
+            padding: 0;
+        }
+        td.yousee-recording-inprogress {
+            background-color: yellow !important;
+            text-align: center;
+            padding: 0;
+        }
+        td.yousee-recording-failed {
+            background-color: red !important;
+            text-align: center;
+            padding: 0;
+        }
+        td.yousee-recording-done {
+            background-color: green !important;
+            text-align: center;
+            padding: 0;
+        }
+
+        a.yousee-status-link {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            padding: 8px 0;
+        }
     </style>
     <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 
@@ -57,13 +85,12 @@
 
             <div class="btn-group nav">
                 <div class="input-append date nav" id="dp" data-date-format="yyyy-mm-dd">
-                    <input class="span2" size="16" type="text" value="1970-01-01" readonly />
+                    <input class="span2" size="10" type="text" value="1970-01-01" readonly />
                     <span class="add-on"><i class="icon-calendar"></i></span>
                 </div>
             </div>
 
             <div class="btn-group nav">
-
                 <button class="btn" id="reload"><span class="icon-refresh"></span>Reload</button>
             </div>
 
@@ -162,7 +189,7 @@
         var curTime = 0;
         function pad(until) {
             while (curTime < until) {
-                items.push('<td bgcolor="white">&nbsp;</td>');
+                items.push('<td class="yousee-recording-none">&nbsp;</td>');
                 curTime++;
             }
         }
@@ -176,6 +203,9 @@
         $.each(state, function(id, content) {
             try {
                 var filename = content.entity.name;
+                if (!filename.match('\\.ts$')) {
+                    return true; //continue with next
+                }
                 var channel = filename.substring(0, filename.indexOf("_"));
                 var date = filename.split('-').slice(1,4).join('-');
                 var time = parseInt(filename.split('-')[4].split('.')[0], 10);
@@ -192,15 +222,15 @@
                 if (curTime == time) {
                     switch (content.stateName) {
                         case '<%= DONE_STATE %>':
-                            items.push('<td style="background-color: green; text-align: center"><a href="play.jsp?file=' + encodeURIComponent('<%= DELIVERY_HTTP_PREFIX %>' + encodeURIComponent(content.entity.name)) + '"><i class="icon-play"></i></a></td>');
+                            items.push('<td class="yousee-recording-done"><a class="yousee-status-link" href="play.jsp?file=' + encodeURIComponent('<%= DELIVERY_HTTP_PREFIX %>' + encodeURIComponent(content.entity.name)) + '"><i class="icon-play"></i></a></td>');
                             break;
                         case '<%= STOPPED_STATE %>':
                         case '<%= FAILED_STATE %>':
-                            items.push('<td style="background-color: red; text-align: center"><a href="index.jsp#file=' + encodeURIComponent(content.entity.name) + '&mode=details"><i class="icon-warning-sign"></i></a></td>');
+                            items.push('<td class="yousee-recording-failed"><a class="yousee-status-link" href="index.jsp#file=' + encodeURIComponent(content.entity.name) + '&mode=details"><i class="icon-warning-sign"></i></a></td>');
                             break;
                         case '<%= RESTARTED_STATE %>':
                         default:
-                            items.push('<td style="background-color: yellow; text-align: center"><a href="index.jsp#file=' + encodeURIComponent(content.entity.name) + '&mode=details"><i class="icon-list"></i></a></td>');
+                            items.push('<td class="yousee-recording-inprogress"><a class="yousee-status-link" href="index.jsp#file=' + encodeURIComponent(content.entity.name) + '&mode=details"><i class="icon-list"></i></a></td>');
                             break;
 
                     }
