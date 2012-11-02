@@ -108,6 +108,10 @@
 <script type="text/javascript" src="bootstrap/js/bootstrap.min.js">
 </script>
 <script type="text/javascript">
+    function htmlEscape(string) {
+        return string.replace('&', "&amp;").replace('"', "&quot;").replace("'", "&#39;").replace('>', "&gt;").replace('<', "&lt;")
+    }
+
     function show(state) {
         var items = [];
         $.each(state, function(id, content) {
@@ -120,7 +124,7 @@
             item += "<td>" + content.entity.name + "</td>";
             item += "<td>" + new Date(content.date) + "</td>";
             item += "<td>" + content.component + ": " + content.stateName + "</td>";
-            item += "<td style=\"white-space: pre-wrap\">" + (content.message == null ? '' : content.message) + "</td>";
+            item += "<td style=\"white-space: pre-wrap\">" + (content.message == null ? '' : htmlEscape(content.message)) + "</td>";
             item += "<td><div class=\"btn-group\">";
             if ($.deparam.fragment().mode != 'details') {
                 item += allStatesLink;
