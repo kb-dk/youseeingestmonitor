@@ -106,6 +106,9 @@
 
 <div class="container">
     <h1><span id="header">Overview</span></h1>
+    <div>
+        <span id="statistics"></span>
+    </div>
     <table class="table">
         <thead>
         <tr>
@@ -185,6 +188,8 @@
 
         var items = [];
         var unparsed = [];
+        var channels = 0;
+        var recordings = 0;
         var curChannel = '';
         var curTime = 0;
         function pad(until) {
@@ -212,7 +217,9 @@
                 if (date != $.deparam.fragment().date) {
                     return true; // continue with next
                 }
+                recordings++;
                 if (channel != curChannel) {
+                    channels++;
                     endRow();
                     curChannel = channel;
                     curTime = 0;
@@ -255,6 +262,8 @@
             'id': 'statetable',
             html: unparsed.join('')
         }).replaceAll('#errors');
+
+        $('#statistics').replaceWith('<span id="statistics">Channels ' + channels + ', recordings: ' + recordings + '</span>');
 
         $("[rel=tooltip]").tooltip();
     }
