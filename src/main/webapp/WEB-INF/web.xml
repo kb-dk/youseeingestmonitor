@@ -63,6 +63,6 @@
 
     <context-param>
         <param-name>scratchdeliveryhttpprefix</param-name>
-        <param-value>http://localhost/~yousee/</param-value>
+        <param-value>http://localhost/~scratch/</param-value>
     </context-param>
 </web-app>

@@ -22,6 +22,7 @@
     String STOPPED_STATE = application.getInitParameter("stopped-state");
     String RESTARTED_STATE = application.getInitParameter("restarted-state");
     String WORKFLOWSTATEMONITOR_SERVICE = application.getInitParameter("workflowstatemonitorservice");
+    String SCRATCH_DELIVERY_HTTP_PREFIX = application.getInitParameter("scratchdeliveryhttpprefix");
 %>
 <html lang="en">
 <head>
@@ -213,7 +214,9 @@
             case 'details':
                 $('#details').button('toggle');
                 update('states/' + $.deparam.fragment().file + '?' + datequery,
-                       'Details for ' + $.deparam.fragment().file);
+                       'Details for ' + $.deparam.fragment().file + ' '
+                       + '<a class="btn" href="play.jsp?file=' + encodeURIComponent('<%= SCRATCH_DELIVERY_HTTP_PREFIX %>'
+                       + encodeURIComponent($.deparam.fragment().file)) + '"><i class="icon-play"></i>Attempt to play</a>');
                 break;
             case 'inprogress':
             default:
