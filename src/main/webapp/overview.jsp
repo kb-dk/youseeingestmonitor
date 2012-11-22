@@ -24,6 +24,7 @@
     String RESTARTED_STATE = application.getInitParameter("restarted-state");
     String WORKFLOWSTATEMONITOR_SERVICE = application.getInitParameter("workflowstatemonitorservice");
     String DELIVERY_HTTP_PREFIX = application.getInitParameter("deliveryhttpprefix");
+    String LOOKAHEAD = application.getInitParameter("lookahead");
 %>
 <html lang="en">
 <head>
@@ -286,7 +287,7 @@
         $('#dp').find('input')[0].value = formatDate(day);
         $('#dp').datepicker('update');
         var later = new Date(day);
-        later.setDate(day.getDate() + 7);
+        later.setDate(day.getDate() + parseInt(LOOKAHEAD, 10));
         var startDate = formatDate(day);
         var endDate = formatDate(later);
         $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>states?onlyLast=true&startDate=' + startDate + '&endDate=' + endDate, show);
