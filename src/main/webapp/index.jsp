@@ -123,7 +123,7 @@
             var restartLink = '<a href="#" rel="tooltip" title="Retry downloding this file." class="btn" onclick="restart(\'' + content.entity.name + '\'); return false"><i class="icon-play"></i> Restart</a>';
 
             var playLink = '<a class="btn" href="play.jsp?file=' + encodeURIComponent(state == "<%= DONE_STATE %>" ? '<%= DELIVERY_HTTP_PREFIX %>' : '<%= SCRATCH_DELIVERY_HTTP_PREFIX %>'
-                       + encodeURIComponent($.deparam.fragment().file)) + '"><i class="icon-play"></i> Play</a>'
+                       + encodeURIComponent(content.entity.name)) + '"><i class="icon-play"></i> Play</a>'
 
             var item = "<tr>";
             item += "<td>" + content.entity.name + "</td>";
