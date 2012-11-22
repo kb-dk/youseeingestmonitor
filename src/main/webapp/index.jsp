@@ -23,6 +23,7 @@
     String RESTARTED_STATE = application.getInitParameter("restarted-state");
     String WORKFLOWSTATEMONITOR_SERVICE = application.getInitParameter("workflowstatemonitorservice");
     String SCRATCH_DELIVERY_HTTP_PREFIX = application.getInitParameter("scratchdeliveryhttpprefix");
+    String DELIVERY_HTTP_PREFIX = application.getInitParameter("deliveryhttpprefix");
 %>
 <html lang="en">
 <head>
@@ -121,6 +122,9 @@
             var stopLink = '<a href="#" rel="tooltip" title="Do not retry downloading this file on errors." class="btn" onclick="stop(\'' + content.entity.name + '\'); return false"><i class="icon-stop"></i> Stop</a>';
             var restartLink = '<a href="#" rel="tooltip" title="Retry downloding this file." class="btn" onclick="restart(\'' + content.entity.name + '\'); return false"><i class="icon-play"></i> Restart</a>';
 
+            var playLink = '<a class="btn" href="play.jsp?file=' + encodeURIComponent(state == "<%= DONE_STATE %>" ? '<%= DELIVERY_HTTP_PREFIX %>' : '<%= SCRATCH_DELIVERY_HTTP_PREFIX %>'
+                       + encodeURIComponent($.deparam.fragment().file)) + '"><i class="icon-play"></i> Play</a>'
+
             var item = "<tr>";
             item += "<td>" + content.entity.name + "</td>";
             item += "<td>" + new Date(content.date) + "</td>";
@@ -136,6 +140,9 @@
             }
             if ($.deparam.fragment().mode != 'details' && content.stateName != "<%= RESTARTED_STATE %>") {
                 item += restartLink;
+            }
+            if ($.deparam.fragment().mode != 'details' || ($.deparam.fragment().mode == 'details' && items.length == 1 )) {
+                item += playLink;
             }
             item += "</div></td>";
             item += "</tr>";
@@ -214,9 +221,7 @@
             case 'details':
                 $('#details').button('toggle');
                 update('states/' + $.deparam.fragment().file + '?' + datequery,
-                       'Details for ' + $.deparam.fragment().file + ' '
-                       + '<a class="btn" href="play.jsp?file=' + encodeURIComponent('<%= SCRATCH_DELIVERY_HTTP_PREFIX %>'
-                       + encodeURIComponent($.deparam.fragment().file)) + '"><i class="icon-play"></i>Attempt to play</a>');
+                       'Details for ' + $.deparam.fragment().file);
                 break;
             case 'inprogress':
             default:
