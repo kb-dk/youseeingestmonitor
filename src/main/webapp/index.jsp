@@ -120,7 +120,7 @@
             var allStatesLink = '<a rel="tooltip" title="Show all individual states this file has gone through." href="#" class="btn" onclick="$.bbq.pushState(\'#mode=details&file=' + encodeURIComponent(content
                     .entity.name) + '\', 0); return false"><i class="icon-list"></i> Show all states</a>';
             var stopLink = '<a href="#" rel="tooltip" title="Do not retry downloading this file on errors." class="btn" onclick="stop(\'' + content.entity.name + '\'); return false"><i class="icon-stop"></i> Stop</a>';
-            var restartLink = '<a href="#" rel="tooltip" title="Retry downloding this file." class="btn" onclick="restart(\'' + content.entity.name + '\'); return false"><i class="icon-play"></i> Restart</a>';
+            var restartLink = '<a href="#" rel="tooltip" title="Retry downloding this file." class="btn" onclick="restart(\'' + content.entity.name + '\'); return false"><i class="icon-repeat"></i> Restart</a>';
 
             var playLink = '<a class="btn" href="play.jsp?file=' + encodeURIComponent(state == "<%= DONE_STATE %>" ? '<%= DELIVERY_HTTP_PREFIX %>' : '<%= SCRATCH_DELIVERY_HTTP_PREFIX %>'
                        + encodeURIComponent(content.entity.name)) + '"><i class="icon-play"></i> Play</a>'
