@@ -4,7 +4,7 @@
 
     <groupId>dk.statsbiblioteket.medieplatform</groupId>
     <artifactId>yousee-ingest-monitor</artifactId>
-    <version>0.10</version>
+    <version>0.11-SNAPSHOT</version>
     <name>Yousee Ingest Monitor</name>
     <packaging>war</packaging>
 
