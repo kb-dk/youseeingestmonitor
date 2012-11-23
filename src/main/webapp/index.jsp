@@ -141,7 +141,7 @@
             if ($.deparam.fragment().mode != 'details' && content.stateName != "<%= RESTARTED_STATE %>") {
                 item += restartLink;
             }
-            if ($.deparam.fragment().mode != 'details' || ($.deparam.fragment().mode == 'details' && items.length == 0 )) {
+            if (content.entity.name.match('.ts$') && ($.deparam.fragment().mode != 'details' || ($.deparam.fragment().mode == 'details' && items.length == 0 ))) {
                 item += playLink;
             }
             item += "</div></td>";

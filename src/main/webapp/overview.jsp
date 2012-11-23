@@ -282,12 +282,15 @@
             day = new Date(parseInt(dateStrings[0], 10), parseInt(dateStrings[1], 10) - 1, parseInt(dateStrings[2], 10));
         } else {
             day = new Date();
+            day.setDate(day.getDate() - 1);
+            $.bbq.pushState("#date=" + formatDate(day));
+            return;
         }
         $('#header').replaceWith('<span id="header">Overview of ' + formatDate(day) + '</span>');
         $('#dp').find('input')[0].value = formatDate(day);
         $('#dp').datepicker('update');
         var later = new Date(day);
-        later.setDate(day.getDate() + parseInt(LOOKAHEAD, 10));
+        later.setDate(day.getDate() + parseInt(<%= LOOKAHEAD %>, 10));
         var startDate = formatDate(day);
         var endDate = formatDate(later);
         $.getJSON('<%= WORKFLOWSTATEMONITOR_SERVICE %>states?onlyLast=true&startDate=' + startDate + '&endDate=' + endDate, show);
